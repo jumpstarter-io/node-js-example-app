@@ -1,0 +1,16 @@
+#!/bin/env node
+var debug = require('debug')('todoApp');
+var app = require('../app');
+var models = require("../models");
+
+// this is the port used inside the container
+app.set('port', 8080);
+
+// synchronize the database with the models and
+// then start the app
+models.sequelize.sync().then(function() {
+    var server = app.listen(app.get('port'), function() {
+        console.log('Server listening on port ' + server.address().port);
+    });
+});
+
