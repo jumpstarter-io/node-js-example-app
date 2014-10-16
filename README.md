@@ -25,10 +25,12 @@ Then ssh into your assembly and run the following commands:
 
 To run:
 
-If you're not running the project on the Jumpstarter platform:
+If you're running the app on the Jumpstarter platform:
+
+    $ ./bin/www
+
+Otherwise we need to disable Jumpstarter specific paths with the command:
 
     $ NODE_ENV = "development" ./bin/www
 
-Otherwise: 
-
-    $ ./bin/www
+_NOTE_ that this will disable all authentication and while running in development mode the Jumpstarter integrations won't work.
