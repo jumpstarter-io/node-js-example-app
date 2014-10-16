@@ -15,9 +15,13 @@ Then ssh into your assembly and run the following commands:
     
     $ cd node-js-example-app
     
-    $ npm install sequelize@2.0.0-rc1 sequelize-cli sqlite3
+    $ npm install sequelize@2.0.0-rc1 
+    $ npm install sequelize-cli 
+    $ npm install sqlite3
     
     $ npm install
+
+    $ mkdir /app/state/todo
 
 To run:
 

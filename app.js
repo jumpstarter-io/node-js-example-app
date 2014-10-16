@@ -82,7 +82,7 @@ var loginCheck = function (failFn, okFn) {
     };
 };
 
-app.get("/", loginCheck(responseRedirect("/"), function (req, res) {
+app.get("/", loginCheck(responseRedirect("/login"), function (req, res) {
     return res.render("main", {homeActive: "active"});
 }));
 
