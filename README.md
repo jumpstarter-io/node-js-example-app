@@ -25,4 +25,10 @@ Then ssh into your assembly and run the following commands:
 
 To run:
 
+If you're not running the project on the Jumpstarter platform:
+
+    $ NODE_ENV = "development" ./bin/www
+
+Otherwise: 
+
     $ ./bin/www

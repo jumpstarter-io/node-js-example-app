@@ -10,8 +10,14 @@ var fs = require("fs");
 var crypto = require("crypto");
 var app = express();
 
+
+var mode = process.env.NODE_ENV || "production";
+var isDevMode = (mode === "development");
 // load the jumpstarter integration lib
-var jsApi = require("jumpstarterapi");
+var jsApi = null;
+try {
+    jsApi = require("jumpstarterapi");
+} catch (e) {}
 
 // load the sequelize db models
 var models = require("./models");
@@ -34,7 +40,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 // generates a secret used for signing the client cookie
 // if it doesn't exist.
 var getCookieSecret = function() {
-    var filePath = "/app/state/todo/cookieSecret";
+    var pathPrefix = (isDevMode)? __dirname: "/app/state/todo/",
+        filePath = path.join(pathPrefix, "cookieSecret");
     if (fs.existsSync(filePath)) {
         var rawData = fs.readFileSync(filePath).toString();
         return rawData.replace(/\n/g, "");
@@ -60,6 +67,7 @@ app.use(session({
     resave: true
 }));
 
+
 // convenience functions for routes
 var responseRedirect = function (path) {
     return function (req, res) {
@@ -75,7 +83,7 @@ var responseStatus = function (status) {
 
 var loginCheck = function (failFn, okFn) {
     return function (req, res) {
-        if (!req.session.logged_in) {
+        if (!req.session.logged_in && !isDevMode) {
             return failFn(req, res);
         }
         return okFn(req, res);
@@ -86,10 +94,23 @@ app.get("/", loginCheck(responseRedirect("/login"), function (req, res) {
     return res.render("main", {homeActive: "active"});
 }));
 
-app.get("/login", loginCheck(function (req, res) {
-    var loginURL = jsApi.env.user().login_url;
+var renderLogin = function(req, res) {
+    var loginURL = "/login";
+    try {
+        loginURL = jsApi.env.user().login_url;
+    } catch (e) {}
     return res.render("login", {loginURL: loginURL});
-}, responseRedirect("/")));
+};
+
+app.get("/login", loginCheck(function (req, res) {
+    renderLogin(req, res);
+}, function(req, res) {
+    if (isDevMode) {
+        renderLogin(req, res);
+    } else {
+        responseRedirect("/")(req, res);
+    }
+}));
 
 // route used for reflected login or normal portal
 // authentication. 

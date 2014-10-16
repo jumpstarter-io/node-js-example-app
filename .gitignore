@@ -1,2 +1,6 @@
 nbproject
 .DS*
+*~
+node_modules
+cookieSecret
+dev_db.sqlite
