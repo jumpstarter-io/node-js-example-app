@@ -89,6 +89,18 @@ var loginCheck = function (failFn, okFn) {
     };
 };
 
+var getEmailMD5 = function() {
+    var email;
+    if (!isDevMode) {
+        email = jsApi.env.user().email;
+    } else {
+        email = "test@example.com";
+    }
+    var md5sum = crypto.createHash("md5");
+    md5sum.update(email);
+    return md5sum.digest("hex");
+};
+
 app.get("/", loginCheck(responseRedirect("/login"), function (req, res) {
     var tasks = [];
     models.Task.findAll({
@@ -118,8 +130,7 @@ app.get("/", loginCheck(responseRedirect("/login"), function (req, res) {
             console.log(task.SubTasks);
         }
         doa = undefined;
-        //console.log(JSON.stringify(tasks));
-        res.render("layout", {todos: tasks, hasTodos: tasks.length > 0});
+        res.render("layout", {todos: tasks, hasTodos: tasks.length > 0, emailMD5: getEmailMD5()});
         tasks = undefined;
     });
 }));
