@@ -1,26 +1,50 @@
 {% extends "base.html" %}
 {% block body %}
 <div class="container">
-    <nav class="navbar navbar-inverse" role="navigation">
-        <div class="container-fluid">
-            <div class="navbar-header">
-                <a class="navbar-brand" href="/"><i class="glyphicon glyphicon-edit"></i></a>
+    <header>
+        <div class="pull-right js-menu">
+            <a href="/logout">
+                <i class="fa fa-sign-out"></i> Sign out
+            </a>
+        </div>
+        <img src="/images/logo.png" alt="Todo app" />
+    </header>
+</div>
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <input class="add-task" type="text" placeholder="Add a task to your list" />
+        </div>
+    </div>
+</div>
+<div class="container task-list">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="task-wrapper">
+                <div class="pull-right date-and-indicators">
+                   <i class="fa fa-file-text-o"></i> <i class="fa fa-paperclip"></i> <span class="date hidden-sm hidden-xs">10 October, 2014</span>
+                </div>
+                <a href="#" class="tick"><i class="fa fa-check-square-o"></i></a><span class="title">Qwerty1234</span>
             </div>
-            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-9">
-                <ul class="nav navbar-nav">
-                    <li class="{{homeActive}}"><a href="/">Todos</a></li>
-                    <li class="{{newActive}}"><a href="#" class="newTodo">New Todo</a></li>
-                </ul>
-                <div class="pull-right">
-                    <div class="collapse navbar-collapse">
-                        <ul class="nav navbar-nav">
-                            <li><a href="/logout"><i class="glyphicon glyphicon-log-out"></i> Log out</a></li>
-                        </ul>
+        </div>
+    </div>
+</div>
+<div class="container task-list">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="task-wrapper">
+                <div class="task">
+                    <div class="pull-right date-and-indicators">
+                       <i class="fa fa-file-text-o"></i> <i class="fa fa-paperclip"></i> <span class="date hidden-sm hidden-xs">10 October, 2014</span>
                     </div>
+                    <a href="#" class="open"><i class="fa fa-square-o"></i></a><span class="title">Qwerty1234</span>
+                </div>
+                <div class="task-details">
+                    <input type="text" class="description" placeholder="Add a description"/>
                 </div>
             </div>
         </div>
-    </nav>
+    </div>
 </div>
 <div class="container">
     {% block content %} {% endblock %}

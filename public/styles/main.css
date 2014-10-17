@@ -1,0 +1,111 @@
+body {
+	background: #2c2c2c url("/images/bg-tree-texture.png") center repeat;
+	color: #fff;
+	font-family: "Helvetica", "Open Sans", sans-serif;
+}
+
+header {
+	margin: 20px 0;
+}
+
+.container {
+	max-width: 970px;
+}
+
+.js-menu a {
+	color:#fff;
+	font-size: 16px;
+	opacity: 0.6;
+	display: block;
+	text-decoration: none;
+	margin-top: 20px;
+}
+
+.add-task {
+	border:none;
+	color: #fff;
+	width: 100%;
+	font-size: 18px;
+	background-color: rgba(0,0,0,0.5);
+	padding: 11px 40px;
+	-moz-border-radius: 4px;
+  	-webkit-border-radius: 4px;
+  	border-radius: 4px;
+  	margin-bottom: 20px;
+  	-webkit-box-shadow: 0 0 6px #000 inset;
+    -moz-box-shadow: 0 0 6px #000 inset;
+    box-shadow: 0 0 6px #000 inset;
+}
+
+.add-task::-webkit-input-placeholder, .add-task:-moz-placeholder,.add-task::-moz-placeholder,.add-task:-ms-input-placeholder {
+   color: #6e6e6e;
+}
+
+.task-list .row {
+	margin-bottom: 5px;
+}
+
+.task-wrapper { 
+	font-size: 18px;
+	color: #000;
+	padding: 11px 15px 11px 0;
+	-moz-border-radius: 4px;
+  	-webkit-border-radius: 4px;
+  	border-radius: 4px;
+	background-color: #f3f3f3;
+	background-image: -webkit-gradient(linear, left top, left bottom, from(#eeeeee), to(#f9f9f9)); /* Saf4+, Chrome */
+	background-image: -webkit-linear-gradient(top, #eeeeee, #f9f9f9); /* Chrome 10+, Saf5.1+, iOS 5+ */
+	background-image:    -moz-linear-gradient(top, #eeeeee, #f9f9f9); /* FF3.6 */
+	background-image:     -ms-linear-gradient(top, #eeeeee, #f9f9f9); /* IE10 */
+	background-image:      -o-linear-gradient(top, #eeeeee, #f9f9f9); /* Opera 11.10+ */
+	background-image:         linear-gradient(top, #eeeeee, #f9f9f9);
+	filter: progid:DXImageTransform.Microsoft.gradient(GradientType=0,StartColorStr='#eeeeee', EndColorStr='#f9f9f9');
+}
+
+.task-wrapper .tick {
+	width: 40px;
+	height: 18px;
+	line-height: 18px;
+	vertical-align: middle;
+	display: inline-block;
+	color: #000;
+	text-decoration: none;
+}
+
+.task-wrapper .tick i {
+	margin-left:13px;
+}
+
+.task-wrapper .open {
+	width: 40px;
+	height: 18px;
+	line-height: 18px;
+	vertical-align: middle;
+	display: inline-block;
+	text-align: center;
+	color: #000;
+	text-decoration: none;
+}
+
+.task-wrapper .task {
+	clear: both;
+}
+
+.task-wrapper .task-details {
+	margin-top: 5px;
+	padding: 0 40px;
+}
+.task-wrapper .task-details input.description {
+	border: none;
+	background-color: transparent;
+	width: 100%;
+	color:#666666;
+}
+
+.task-wrapper .date-and-indicators {
+	color: #666666;
+}
+
+.task-wrapper .date-and-indicators i {
+	margin-right: 6px;
+}
