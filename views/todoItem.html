@@ -7,7 +7,7 @@
                 </div>
                 <form class="frm-task-complete" data-api="/task/complete" style="display: inline;">
                     <input type="hidden" name="tid" value="{{todo.id}}"/>
-                    <a href="#" class="open" onclick="$(this).submit();"><i class="fa fa-square-o"></i></a><span class="title">{{todo.title}}</span>
+                    <a href="#" class="open" onclick="$(this).submit(); return false;"><i class="fa fa-square-o"></i></a><span class="title">{{todo.title}}</span>
                 </form>
             </div>
             <div class="task-details" style="display: none;">

@@ -2,10 +2,8 @@
     {% if !stask.done %}
     <form class="frm-sub-task-complete" style="display: inline;" data-api="/subtask/complete">
         <input type="hidden" name="stid" value="{{stask.id}}"/>
-        <a href="#" onclick="$(this).submit();">
-        <i class="fa fa-square-o"></i></a>
+        <a href="#" onclick="$(this).submit();"><i class="fa fa-square-o"></i></a><p class="sub-task">{{stask.title}}</p>
     </form>
-    <p class="sub-task">{{stask.title}}</p>
     {% else %} 
         <a href="#" onclick="return false;"><i class="fa fa-check-square-o"></i></a><p class="sub-task">{{stask.title}}</p>
     {% endif %}

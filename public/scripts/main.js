@@ -18,6 +18,9 @@ $(function () {
         var a = $(this).attr(attribute);
         return a !== null && a !== undefined;
     };
+    
+    var apiCalling = false;
+    
     var api = function() {
         function api(ep) {
             if (!(this instanceof api))
@@ -26,15 +29,18 @@ $(function () {
             return this;
         };
         api.prototype.call = function(data, cb) {
+            apiCalling = true;
             $.ajax({
                 url: this.ep,
                 type: "POST",
                 data: JSON.stringify(data),
                 contentType: "application/json; charset=UTF-8",
                 success: function(rsp, textStatus, jqXHR) {
+                    apiCalling = false;
                     cb && cb(rsp || true);
                 },
                 error: function(jqXHR, textStatus, errorThrown) {
+                    apiCalling = false;
                     cb && cb(null);
                 }
             });
@@ -56,11 +62,18 @@ $(function () {
     
     var taskComplete = function(ev, rsp) {
         if (rsp) {
-            var $parent = $(this).parents("div.todo-item:first");
-            $parent.slideUp(function() {
+            var $parent = $(this).parents("div.todo-item:first"),
+                $taskDetails = $parent.find("div.task-details");
+            console.log($taskDetails);
+            if (!$taskDetails.is(":visible")) {
+                console.log("details is not visible");
+                $taskDetails.remove();
+            }
+            $parent.fadeOut("fast", function() {
                 $parent.remove();
             });
         }
+        return false;
     };
     
     $(".frm-task-complete").on("apiResponse", taskComplete);
@@ -75,11 +88,14 @@ $(function () {
         } else {
             $i.hide();
         }
+        return false;
     };
     
     $(".frm-task-set-content").on("apiResponse", taskContent);
     
     var taskToggleDetails = function(ev) {
+        if (apiCalling) return false;
+        console.log("toggle details");
         var $parent = $(ev.target).parents("div.row.todo-item:first"),
             $details = $parent.find("div.task-details");
         $details.toggle();
@@ -112,6 +128,7 @@ $(function () {
                 }
             });
         }
+        return false;
     };
     
     $(".frm-add-sub-task").on("apiResponse", taskAddSubtask);
