@@ -13,10 +13,13 @@
 <div class="container">
     <div class="row">
         <div class="col-md-12">
-            <input class="add-task" type="text" placeholder="Add a task to your list" />
+            <form name="new-todo" role="form" data-api="/task/new">
+                <input name="title" class="add-task" type="text" placeholder="Add a task to your list" />
+            </form>
         </div>
     </div>
 </div>
+<!--
 <div class="container task-list">
     <div class="row">
         <div class="col-md-12">
@@ -46,9 +49,13 @@
         </div>
     </div>
 </div>
-<div class="container">
-    {% block content %} {% endblock %}
+-->
+<div class="container task-list">
+    {% if hasTodos %}
+        {% for todo in todos %}
+            {% include "todoItem.html" with todo %}
+        {% endfor %}
+    {% endif %}
 </div>
 <script type="text/javascript" src="/scripts/main.js"></script>
-{% block scripts %} {% endblock %}
 {% endblock %}

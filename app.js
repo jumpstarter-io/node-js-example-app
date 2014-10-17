@@ -10,7 +10,6 @@ var fs = require("fs");
 var crypto = require("crypto");
 var app = express();
 
-
 var mode = process.env.NODE_ENV || "production";
 var isDevMode = (mode === "development");
 // load the jumpstarter integration lib
@@ -26,8 +25,8 @@ var models = require("./models");
 app.engine("html", swig.renderFile);
 app.set('views', path.join(__dirname, 'views'));
 app.set("view engine", "html");
-app.set("view cache", false);
-swig.setDefaults({cache: false});
+app.set("view cache", !isDevMode);
+swig.setDefaults({cache: isDevMode? false: 'memory'});
 
 app.use(logger('dev'));
 // urlencoded is used for jumpstarter portal auth
@@ -91,7 +90,31 @@ var loginCheck = function (failFn, okFn) {
 };
 
 app.get("/", loginCheck(responseRedirect("/login"), function (req, res) {
-    return res.render("main", {homeActive: "active"});
+    var tasks = [];
+    models.Task.findAll({
+        where: {
+            done: false
+        },
+        include: [models.SubTask],
+        order: "`Task`.`id` ASC"
+    }).then(function (doa) {
+        for (var i = 0; i < doa.length; i++) {
+            var task = doa[i].values;
+            task.SubTasks = task.SubTasks.sort(function (a, b) {
+                if (a.id < b.id)
+                    return -1;
+                if (a.id > b.id)
+                    return 1;
+                return 0;
+            });
+            task.hasSubTasks = task.SubTasks.length > 0;
+            task.hasContent = task.content.length > 0;
+            tasks.push(task);
+        }
+        doa = undefined;
+        res.render("layout", {todos: tasks, hasTodos: tasks.length > 0});
+        tasks = undefined;
+    });
 }));
 
 var renderLogin = function(req, res) {
@@ -138,6 +161,7 @@ app.get("/logout", function (req, res) {
     return res.redirect("/login");
 });
 
+/*
 app.get("/vista/myTodos", loginCheck(responseStatus(404), function (req, res) {
     var tasks = [];
     models.Task.findAll({
@@ -168,6 +192,7 @@ app.get("/vista/myTodos", loginCheck(responseStatus(404), function (req, res) {
         }
     });
 }));
+*/
 
 app.post("/subtask/new", loginCheck(responseStatus(404), function (req, res) {
     var tid = req.body.tid;
@@ -205,13 +230,46 @@ app.post("/subtask/complete", loginCheck(responseStatus(404), function (req, res
 
 app.post("/task/new", loginCheck(responseStatus(404), function (req, res) {
     var title = req.body.title;
-    var content = req.body.content;
-    if (title && content) {
+    if (title) {
         models.Task.create({
             title: title,
-            content: content,
+            content: "",
             done: false
-        }).then(function (doa) {
+        }).then(function (task) {
+            res.status(200).send({tid: task.id});
+        }, function (err) {
+            res.status(500).send();
+        });
+    } else {
+        res.status(404).send();
+    }
+}));
+
+app.post("/task/set-content", loginCheck(responseStatus(404), function(req, res) {
+    var tid = req.body.tid,
+        content = req.body.content;
+    if (tid !== undefined && content) {
+        models.Task.update({
+            content: content
+        }, {
+            where: {id: tid}
+        }).then(function() {
+            res.status(200).send();
+        }, function(err) {
+            res.status(500).send();
+        });
+    }
+}));
+
+app.post("/task/complete", loginCheck(responseStatus(404), function (req, res) {
+    console.log(req.body);
+    var tid = req.body.tid;
+    if (tid !== undefined) {
+        models.Task.update({
+            done: true
+        }, {
+            where: {id: tid}
+        }).then(function () {
             res.status(200).send();
         }, function (err) {
             res.status(500).send();
@@ -221,16 +279,27 @@ app.post("/task/new", loginCheck(responseStatus(404), function (req, res) {
     }
 }));
 
-app.post("/task/complete", loginCheck(responseStatus(404), function (req, res) {
-    models.Task.update({
-        done: true
-    }, {
-        where: {id: req.body.id}
-    }).then(function () {
-        res.status(200).send();
-    }, function (err) {
-        res.status(500).send();
-    });
+app.post("/task/render", loginCheck(responseStatus(404), function(req, res) {
+    var tid = req.body.tid;
+    if (tid !== undefined) {
+        models.Task.find({
+            where: {id: tid},
+            include: [models.SubTask]
+        }).then(function(doa) {
+            if (doa) {
+                var task = doa.values;
+                task.hasSubTasks = task.SubTasks.length > 0;
+                task.hasContent = task.content.length > 0;
+                res.render("todoItem", {todo: task});
+            } else {
+                res.status(404).send();
+            }
+        }, function(err) {
+            res.status(500).send();
+        });
+    } else {
+        res.status(404).send();
+    }
 }));
 
 module.exports = app;
