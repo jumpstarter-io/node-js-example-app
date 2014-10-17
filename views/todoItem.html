@@ -3,19 +3,35 @@
         <div class="task-wrapper">
             <div class="task">
                 <div class="pull-right date-and-indicators">
-                   <i class="fa fa-file-text-o" {% if !todo.hasContent %} style="display: none;"{% endif %}></i> <i class="fa fa-paperclip" {% if !todo.hasSubTasks %} style="display: none;" {% endif %}></i> <span class="date hidden-sm hidden-xs">{{todo.createdAt|date('F jS')}}</span>
+                    <i class="fa fa-file-text-o" {% if !todo.hasContent %} style="display: none;"{% endif %}></i> <i class="fa fa-paperclip" {% if !todo.hasSubTasks %} style="display: none;" {% endif %}></i> <span class="date hidden-sm hidden-xs">{{todo.createdAt|date('F jS')}}</span>
                 </div>
                 <form class="frm-task-complete" data-api="/task/complete" style="display: inline;">
                     <input type="hidden" name="tid" value="{{todo.id}}"/>
-                <a href="#" class="open" onclick="$(this).submit();"><i class="fa fa-square-o"></i></a><span class="title">{{todo.title}}</span>
+                    <a href="#" class="open" onclick="$(this).submit();"><i class="fa fa-square-o"></i></a><span class="title">{{todo.title}}</span>
                 </form>
             </div>
-            <div class="task-details">
-                <form class="frm-task-set-content" data-api="/task/set-content" style="display: inline;">
-                    <input type="hidden" name="tid" value="{{todo.id}}"/>
-                    <input type="text" name="content" class="description" {% if !todo.hasContent %}placeholder="Add a description" {% else %} placeholder="{{todo.content}}" {% endif %}/>
-                </form>
+            <div class="task-details" style="display: none;">
+                <div class="description">
+                    <form class="frm-task-set-content" data-api="/task/set-content" style="display: inline;">
+                        <input type="hidden" name="tid" value="{{todo.id}}"/>
+                        <input type="text" name="content" class="description" {% if !todo.hasContent %}placeholder="Add a description" {% else %} placeholder="{{todo.content}}" {% endif %}/>
+                    </form>
+                </div>
+                <div class="sub">
+                    {% if todo.hasSubTasks %}
+                    {% for stask in todo.SubTasks %}
+                        {% include "todoSubTask.html" with stask %}
+                    {% endfor %}
+                    {% endif %}
+                    <div class="sub-task">
+                        <form class="frm-add-sub-task" data-api="/subtask/new" style="display: inline;">
+                            <input type="hidden" name="tid" value="{{todo.id}}"/>
+                            <a href="#" class="add"><i class="fa fa-plus"></i></a><input type="text" class="add-new" placeholder="Add a subtask" name="title"/>
+                        </form>
+                    </div>
+                </div>
             </div>
+
         </div>
     </div>
 </div>

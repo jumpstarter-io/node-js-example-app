@@ -65,7 +65,7 @@ $(function () {
     
     $(".frm-task-complete").on("apiResponse", taskComplete);
     
-    var taskContent = function(ev, rsp) {
+    var taskContent = function(ev) {
         var $frm = $(ev.target),
             iptVal = $frm.find("input[name='content']").val(),
             $row = $frm.parents("div.row.todo-item:first"),
@@ -79,17 +79,74 @@ $(function () {
     
     $(".frm-task-set-content").on("apiResponse", taskContent);
     
+    var taskToggleDetails = function(ev) {
+        var $parent = $(ev.target).parents("div.row.todo-item:first"),
+            $details = $parent.find("div.task-details");
+        $details.toggle();
+        return false;
+    };
+    
+    $("div.task").on("click", taskToggleDetails);
+    
+    var subtaskComplete = function(ev, rsp) {
+        if (rsp) {
+            new api("/subtask/render").call(rsp, function(rsp) {
+                $(ev.target).parent().replaceWith($(rsp));
+            });
+        }
+        return false;
+    };
+    
+    $(".frm-sub-task-complete").on("apiResponse", subtaskComplete);
+    
+    var taskAddSubtask = function(ev, rsp) {
+        var $frm = $(ev.target);
+        if (rsp) {
+            new api("/subtask/render").call(rsp, function(rsp) {
+                if (rsp) {
+                    var $st = $(rsp);
+                    $st.find("form").on("apiResponse", subtaskComplete);
+                    $st.insertBefore($frm);
+                    $frm.find("input[name='title']").val("");
+                    $frm.parents("div.row.todo-item:first").find("i.fa-paperclip").show();
+                }
+            });
+        }
+    };
+    
+    $(".frm-add-sub-task").on("apiResponse", taskAddSubtask);
+    
+    $("div.task-details").on("click", function() {
+        console.log("task-details click");
+        return false;
+    });
+    
+    $("body").on("click", function() {
+        console.log("body click");
+        $("div.task-details").each(function(idx, e) {
+            var $elem = $(e);
+            if ($elem.is(":visible")) {
+                $elem.hide();
+            }
+        });
+        return false;
+    });
+    
     $("form[name='new-todo']").on("apiResponse", function(ev, rsp) {
         var $frm = $(ev.target);
         if (rsp) {
             new api("/task/render").call(rsp, function(rsp) {
                 if (rsp) {
                     var $c = $(rsp);
-                    //$c.css("display", "none");
                     $("div.task-list").append($c);
                     $c.find("form.frm-task-complete").on("apiResponse", taskComplete);
                     $c.find("form.frm-task-set-content").on("apiResponse", taskContent);
-                    //$c.slideDown();
+                    $c.find("div.task").on("click", taskToggleDetails);
+                    $c.find("div.task-details").on("click", function() {
+                        return false;
+                    });
+                    $c.find(".frm-add-sub-task").on("apiResponse", taskAddSubtask);
+                    $c.find(".frm-sub-task-complete").on("apiResponse", subtaskComplete);
                     $frm.find("input[type=text], textarea").val("");
                 } else {
                     console.log("did not get a rendered item left");
@@ -99,94 +156,4 @@ $(function () {
             console.log("could not create todo");
         }
     });
-    
-    
-    /*
-    $("div[name='todos']").on("vistaRefreshed", function () {
-        var $todosVista = $(this);
-        $(this).find("input[type='checkbox'].task-complete").on("change", function () {
-            var parent = $(this).parents("div:first");
-            var tid = parent.data("tid");
-            $.ajax({
-                url: "/task/complete",
-                type: "POST",
-                data: {id: tid},
-                success: function () {
-                    parent.slideUp(function () {
-                        parent.remove();
-                        if ($todosVista.children().length === 0) {
-                            $todosVista.trigger("vistaRefresh");
-                        }
-                    });
-                }
-            });
-        });
-
-        $("input.subtask-complete").on("change", function () {
-            var stid = $(this).data("stid");
-            $.ajax({
-                url: "/subtask/complete",
-                type: "POST",
-                data: {stid: stid},
-                success: function () {
-                    $todosVista.trigger("vistaRefresh");
-                }
-            });
-            return false;
-        });
-
-        $("a.add-subtask").on("click", function () {
-            var $parent = $(this).parent(),
-                    $ps = $parent.next(),
-                    $ipt = $ps.find("input[name='title']");
-            $ps.slideToggle(function () {
-                $ipt.focus();
-            });
-        });
-
-        $("form.add-subtask").on("submit", function () {
-            $frm = $(this);
-            $.ajax({
-                url: "/subtask/new",
-                type: "POST",
-                data: $frm.serializeObject(),
-                success: function () {
-                    $todosVista.trigger("vistaRefresh");
-                }
-            });
-            return false;
-        });
-        return false;
-    });
-
-    $("form[name='new-todo']").on("submit", function () {
-        var $frm = $(this);
-        $.ajax({
-            url: "/task/new",
-            type: "POST",
-            data: $frm.serializeObject(),
-            success: function (response, textStatus, jqXHR) {
-                $("div[data-vista]").trigger("vistaRefresh");
-                $("div.new-todo").slideUp(function () {
-                    $frm.find("input[type=text], textarea").val("");
-                });
-            }
-        });
-        return false;
-    });
-
-    $("body").on("vistaRefresh", function (ev) {
-        var $vista = $(ev.target);
-        $.ajax({
-            url: "/vista/" + $vista.attr("data-vista").replace(/^\//, ""),
-            type: "GET",
-            async: true,
-            success: function (response, textStatus, jqXHR) {
-                $vista.html(response).trigger("vistaRefreshed");
-            }
-        });
-    });
-
-    $("div[data-vista]").trigger("vistaRefresh");
-    */
 });

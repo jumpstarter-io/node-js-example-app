@@ -100,7 +100,12 @@ app.get("/", loginCheck(responseRedirect("/login"), function (req, res) {
     }).then(function (doa) {
         for (var i = 0; i < doa.length; i++) {
             var task = doa[i].values;
-            task.SubTasks = task.SubTasks.sort(function (a, b) {
+            var sts = [];
+            for (var j = 0; j < task.SubTasks.length; j++) {
+                var st = task.SubTasks[j].values;
+                sts.push(st);
+            }
+            task.SubTasks = sts.sort(function (a, b) {
                 if (a.id < b.id)
                     return -1;
                 if (a.id > b.id)
@@ -110,8 +115,10 @@ app.get("/", loginCheck(responseRedirect("/login"), function (req, res) {
             task.hasSubTasks = task.SubTasks.length > 0;
             task.hasContent = task.content.length > 0;
             tasks.push(task);
+            console.log(task.SubTasks);
         }
         doa = undefined;
+        //console.log(JSON.stringify(tasks));
         res.render("layout", {todos: tasks, hasTodos: tasks.length > 0});
         tasks = undefined;
     });
@@ -161,39 +168,6 @@ app.get("/logout", function (req, res) {
     return res.redirect("/login");
 });
 
-/*
-app.get("/vista/myTodos", loginCheck(responseStatus(404), function (req, res) {
-    var tasks = [];
-    models.Task.findAll({
-        where: {
-            done: false
-        },
-        include: [models.SubTask],
-        order: "`Task`.`id` ASC"
-    }).then(function (doa) {
-        for (var i = 0; i < doa.length; i++) {
-            var task = doa[i].values;
-            task.SubTasks = task.SubTasks.sort(function (a, b) {
-                if (a.id < b.id)
-                    return -1;
-                if (a.id > b.id)
-                    return 1;
-                return 0;
-            });
-            task.hasSubTasks = task.SubTasks.length > 0;
-            tasks.push(task);
-        }
-        doa = undefined;
-        if (tasks.length) {
-            res.render("todolist", {todos: tasks});
-            tasks = undefined;
-        } else {
-            res.send("You have no tasks yet");
-        }
-    });
-}));
-*/
-
 app.post("/subtask/new", loginCheck(responseStatus(404), function (req, res) {
     var tid = req.body.tid;
     var title = req.body.title;
@@ -206,7 +180,7 @@ app.post("/subtask/new", loginCheck(responseStatus(404), function (req, res) {
                 done: false
             }).then(function (stask) {
                 stask.setTask(task).then(function () {
-                    res.status(200).send();
+                    res.status(200).send({stid: stask.id});
                 });
             });
         } else {
@@ -222,10 +196,30 @@ app.post("/subtask/complete", loginCheck(responseStatus(404), function (req, res
     }, {
         where: {id: stid}
     }).then(function () {
-        res.status(200).send();
+        res.status(200).send({stid: stid});
     }, function () {
         res.status(500).send();
     });
+}));
+
+app.post("/subtask/render", loginCheck(responseStatus(404), function(req, res) {
+    var stid = req.body.stid;
+    if (stid !== undefined) {
+        models.SubTask.find({
+            where: {id: stid}
+        }).then(function(doa) {
+            if (doa) {
+                var stask = doa.values;
+                res.render("todoSubTask", {stask: stask});
+            } else {
+                res.status(404).send();
+            }
+        }, function(err) {
+            res.status(404).send();
+        });
+    } else {
+        res.status(404).send();
+    }
 }));
 
 app.post("/task/new", loginCheck(responseStatus(404), function (req, res) {
