@@ -155,6 +155,7 @@ $(function () {
                 if (rsp) {
                     var $c = $(rsp);
                     $("div.task-list").append($c);
+                    $c.find("div.task-details").show();
                     $c.find("form.frm-task-complete").on("apiResponse", taskComplete);
                     $c.find("form.frm-task-set-content").on("apiResponse", taskContent);
                     $c.find("div.task").on("click", taskToggleDetails);
