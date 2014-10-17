@@ -146,7 +146,6 @@ $(function () {
                 $elem.hide();
             }
         });
-        return false;
     });
     
     $("form[name='new-todo']").on("apiResponse", function(ev, rsp) {
