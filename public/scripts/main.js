@@ -64,9 +64,7 @@ $(function () {
         if (rsp) {
             var $parent = $(this).parents("div.todo-item:first"),
                 $taskDetails = $parent.find("div.task-details");
-            console.log($taskDetails);
             if (!$taskDetails.is(":visible")) {
-                console.log("details is not visible");
                 $taskDetails.remove();
             }
             $parent.fadeOut("fast", function() {
@@ -95,7 +93,6 @@ $(function () {
     
     var taskToggleDetails = function(ev) {
         if (apiCalling) return false;
-        console.log("toggle details");
         var $parent = $(ev.target).parents("div.row.todo-item:first"),
             $details = $parent.find("div.task-details");
         $details.toggle();
@@ -134,12 +131,10 @@ $(function () {
     $(".frm-add-sub-task").on("apiResponse", taskAddSubtask);
     
     $("div.task-details").on("click", function() {
-        console.log("task-details click");
         return false;
     });
     
     $("body").on("click", function() {
-        console.log("body click");
         $("div.task-details").each(function(idx, e) {
             var $elem = $(e);
             if ($elem.is(":visible")) {
