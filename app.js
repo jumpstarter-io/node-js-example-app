@@ -1,5 +1,5 @@
 var session = require("express-session");
-var SQliteStore = require("./connect-sqlite")(session);
+var SequelizeStore = require("./connect-sequelize")(session);
 var express = require('express');
 var path = require('path');
 var logger = require('morgan');
@@ -57,7 +57,7 @@ var getCookieSecret = function() {
 
 // setup session management and use SQliteStore from connect-sqlite
 app.use(session({
-    store: new SQliteStore(),
+    store: new SequelizeStore(),
     secret: getCookieSecret(),
     genid: function (req) {
         return uuid.v4();

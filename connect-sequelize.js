@@ -13,13 +13,13 @@ module.exports = function (session) {
     var db = null;
     var sessionTimeout = 3600; // secs
 
-    function SQliteStore() {};
+    function SequelizeStore() {};
 
-    SQliteStore.prototype.__proto__ = Store.prototype;
+    SequelizeStore.prototype.__proto__ = Store.prototype;
 
     // used by express to resolve a session
     // a valid session is a valid JSON object.
-    SQliteStore.prototype.get = function (sid, fn) {
+    SequelizeStore.prototype.get = function (sid, fn) {
         var now = parseInt(new Date().getTime() / 1000);
         models.Session.find({
             where: {
@@ -42,7 +42,7 @@ module.exports = function (session) {
     };
 
     // used by express to either create a new session or update an old one.
-    SQliteStore.prototype.set = function (sid, sess, fn) {
+    SequelizeStore.prototype.set = function (sid, sess, fn) {
         var eTime = parseInt(new Date().getTime() / 1000) + sessionTimeout;
         var createSession = function () {
             models.Session.create({
@@ -85,7 +85,7 @@ module.exports = function (session) {
 
     // used when a certain session needs to be destroyed. eg: when 
     // the user manually logs out.
-    SQliteStore.prototype.destroy = function (sid, fn) {
+    SequelizeStore.prototype.destroy = function (sid, fn) {
         models.Session.destroy({
             sid: sid
         }).then(function() {
@@ -93,5 +93,5 @@ module.exports = function (session) {
         });
     };
 
-    return SQliteStore;
+    return SequelizeStore;
 };
