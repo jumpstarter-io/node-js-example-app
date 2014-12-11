@@ -21,8 +21,6 @@ Then ssh into your assembly and run the following commands:
     
     $ npm install
 
-    $ mkdir /app/state/todo
-
 To run:
 
 If you're running the app on the Jumpstarter platform:

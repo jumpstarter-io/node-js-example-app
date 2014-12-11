@@ -41,6 +41,9 @@ app.use(express.static(path.join(__dirname, 'public')));
 var getCookieSecret = function() {
     var pathPrefix = (isDevMode)? __dirname: "/app/state/todo/",
         filePath = path.join(pathPrefix, "cookieSecret");
+    if (!fs.existsSync(pathPrefix)) {
+	fs.mkdirSync(pathPrefix);
+    }
     if (fs.existsSync(filePath)) {
         var rawData = fs.readFileSync(filePath).toString();
         return rawData.replace(/\n/g, "");
@@ -159,6 +162,9 @@ app.post("/login", loginCheck(function (req, res) {
             // try to validate the client with the jumpstarter
             // integration library
             if (jsApi.validateSession(req.body["jumpstarter-auth-token"])) {
+		var hour = 3600000;
+		req.session.expires = new Date(Date.now() + hour);
+		req.session.maxAge = hour;
                 req.session.logged_in = true;
                 return res.redirect("/");
             } else {

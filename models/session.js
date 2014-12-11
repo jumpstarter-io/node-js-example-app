@@ -11,7 +11,6 @@
 module.exports = function (sequelize, DataTypes) {
     var Session = sequelize.define("Session", {
         sid: DataTypes.STRING,
-        eTime: DataTypes.INTEGER,
         sess: DataTypes.TEXT
     });
     return Session;

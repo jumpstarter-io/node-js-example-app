@@ -20,7 +20,6 @@ module.exports = function (session) {
     // used by express to resolve a session
     // a valid session is a valid JSON object.
     SequelizeStore.prototype.get = function (sid, fn) {
-        var now = parseInt(new Date().getTime() / 1000);
         models.Session.find({
             where: {
                 sid: sid
@@ -32,7 +31,7 @@ module.exports = function (session) {
                 var session = null;
                 try {
                     // if the session is expired we return a null session
-                    session = (res.eTime < now)? JSON.parse(res.sess): null;
+		    session = JSON.parse(res.sess);
                 } catch (e) {}
                 fn && fn(null, session);
             }
@@ -43,11 +42,9 @@ module.exports = function (session) {
 
     // used by express to either create a new session or update an old one.
     SequelizeStore.prototype.set = function (sid, sess, fn) {
-        var eTime = parseInt(new Date().getTime() / 1000) + sessionTimeout;
         var createSession = function () {
             models.Session.create({
                 sid: sid,
-                eTime: eTime,
                 sess: JSON.stringify(sess)
             }).then(function () {
                 fn && fn.apply(this, arguments);
